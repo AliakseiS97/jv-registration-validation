@@ -144,6 +144,18 @@ class RegistrationServiceImplTest {
     }
 
     @Test
+    void register_AgeZero_notOk() {
+        User user = new User();
+        user.setLogin("edaDGDG");
+        user.setPassword("123456789");
+        user.setAge(0);
+        RegistrationException actual = assertThrows(
+                RegistrationException.class,
+                () -> service.register(user));
+        assertEquals("Age can't be lower than " + MIN_AGE, actual.getMessage());
+    }
+
+    @Test
     void register_age3TooYoung_notOk() {
         User user = new User();
         user.setLogin("SvetlanaPavlova");
@@ -219,5 +231,18 @@ class RegistrationServiceImplTest {
         assertEquals(user.getLogin(), registered.getLogin());
         assertEquals(user.getPassword(), registered.getPassword());
         assertEquals(user.getAge(), registered.getAge());
+    }
+
+    @Test
+    void register_validLogin_ok() {
+        User user = new User();
+        user.setLogin("qwerty");
+        user.setPassword("validPassword");
+        user.setAge(30);
+        User registered = service.register(user);
+        assertEquals(user.getLogin(), registered.getLogin());
+        assertEquals(user.getPassword(), registered.getPassword());
+        assertEquals(user.getAge(), registered.getAge());
+        assertTrue(Storage.people.contains(user));
     }
 }
